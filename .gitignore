@@ -1,5 +1,8 @@
+.DS_Store
+.sublime-project*
+
+node_modules/
+profile.testing/
 snoozetabs.xpi
 snoozetabs.update.rdf
-.DS_Store
-profile.testing/
-.sublime-project*
+snoozetabs*.zip
