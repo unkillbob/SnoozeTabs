@@ -1,0 +1,44 @@
+{
+  "confirmTimeTitle": [
+    "time_exp"
+  ],
+  "timeUpcomingToday": [
+    "time"
+  ],
+  "timeUpcomingTomorrow": [
+    "time"
+  ],
+  "timeUpcomingLater": [
+    "weekday",
+    "month",
+    "day",
+    "time"
+  ],
+  "formatJustTime": [
+    "twelve_hour",
+    "twenty_four_hour",
+    "minutes",
+    "ampm",
+    "short_day",
+    "short_month",
+    "day_of_month"
+  ],
+  "formatDayTime": [
+    "twelve_hour",
+    "twenty_four_hour",
+    "minutes",
+    "ampm",
+    "short_day",
+    "short_month",
+    "day_of_month"
+  ],
+  "formatFullDate": [
+    "twelve_hour",
+    "twenty_four_hour",
+    "minutes",
+    "ampm",
+    "short_day",
+    "short_month",
+    "day_of_month"
+  ]
+}

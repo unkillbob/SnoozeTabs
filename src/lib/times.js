@@ -25,30 +25,40 @@ if (process.env.NODE_ENV === 'development') {
 export function timeForId(time, id) {
   let rv = moment(time);
   let text = rv.fromNow();
+  const twelveHour = ']h[';
+  const twentyFourHour = ']H[';
+  const minutes = ']mm[';
+  const ampm = ']a[';
+  const shortDay = ']ddd[';
+  const shortMonth = ']MMM[';
+  const dayOfMonth = ']D[';
+  const times = [twelveHour, twentyFourHour, minutes, ampm,
+    shortDay, shortMonth, dayOfMonth];
+  let message;
   switch (id) {
     case 'debug':
       rv = rv.add(5, 'seconds');
-      text = rv.format('[@] ha');
+      message = 'formatJustTime';
       break;
     case 'later':
       rv = rv.add(3, 'hours').minute(0);
-      text = rv.format('[@] ha');
+      message = 'formatJustTime';
       break;
     case 'tomorrow':
       rv = rv.add(1, 'day').hour(9).minute(0);
-      text = rv.format('ddd [@] ha');
+      message = 'formatDayTime';
       break;
     case 'weekend':
       rv = rv.day(6).hour(9).minute(0);
-      text = rv.format('ddd [@] ha');
+      message = 'formatDayTime';
       break;
     case 'week':
       rv = rv.add(1, 'week').hour(9).minute(0);
-      text = rv.format('ddd MMM D \ [@] ha');
+      message = 'formatFullDate';
       break;
     case 'month':
       rv = rv.add(1, 'month').hour(9).minute(0);
-      text = rv.format('ddd MMM D \ [@] ha');
+      message = 'formatFullDate';
       break;
     case NEXT_OPEN:
       rv = NEXT_OPEN;
@@ -60,6 +70,11 @@ export function timeForId(time, id) {
       break;
     default:
       break;
+  }
+  if (message) {
+    message = browser.i18n.getMessage(message, times);
+    console.log(message); // eslint-disable-line no-console
+    text = rv.format(`[${message}]`);
   }
   return [rv, text];
 }

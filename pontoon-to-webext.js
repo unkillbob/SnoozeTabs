@@ -15,8 +15,7 @@ let supportedLocales = process.env.SUPPORTED_LOCALES || '*';
 
 const config = {
   'dest': argv.dest || 'dist/_locales',
-  'src': argv.src || 'locales',
-  'default_locale': argv.locale || 'en-US'
+  'src': argv.src || 'locales'
 };
 
 function log(...args) {
@@ -82,38 +81,24 @@ function readPropertiesFile(filePath) {
 
 function getContentPlaceholders() {
   return new Promise((resolve, reject) => {
-    FS.listTree(path.join(process.cwd(), config.src, config.default_locale), (filePath) => {
-      return path.extname(filePath) === '.properties';
-    }).then((files) => {
-      return Promise.all(files.map(readPropertiesFile)).then((properties) => {
-        const mergedPlaceholders = {};
-
-        properties.forEach(messages => {
-          const placeholders = {};
-          Object.keys(messages).forEach(key => {
-            const message = messages[key];
-            if (message.indexOf('{') !== -1) {
-              const placeholder = {};
-              let index = 1;
-              message.replace(regexPlaceholders, (item, key) => {
-                placeholder[key.toLowerCase()] = { content: `$${index}` };
-                index++;
-              });
-              placeholders[key] = placeholder;
-            }
-          });
-          Object.assign(mergedPlaceholders, placeholders);
+    try {
+      const file = path.join(process.cwd(), config.src, 'placeholders.json');
+      const data = require(file);
+      Object.keys(data).forEach(key => {
+        const obj = {};
+        data[key].forEach((key, index) => {
+          obj[key] = {'content': `\$${index + 1}`};
         });
-
-        resolve(mergedPlaceholders);
+        data[key] = obj;
       });
-    }).catch((e) => {
+      resolve(data);
+    } catch (e) {
       reject(e);
-    });
+    }
   });
 }
 
-function getContentMessages(locale, placeholders) {
+function getContentMessages(locale, allPlaceholders) {
   return new Promise((resolve, reject) => {
     FS.listTree(path.join(process.cwd(), config.src, locale), (filePath) => {
       return path.extname(filePath) === '.properties';
@@ -125,11 +110,20 @@ function getContentMessages(locale, placeholders) {
           Object.keys(messages).forEach(key => {
             let message = messages[key];
             messages[key] = { 'message': message };
-            if (placeholders[key]) {
-              message = message.replace(regexPlaceholders, (item, key) => `\$${key.toUpperCase()}\$`);
+            if (message.indexOf('{') !== -1) {
+              const placeholders = allPlaceholders[key];
+              message = message.replace(regexPlaceholders, (item, placeholder) => {
+                if (!placeholders) {
+                  throw `Error: missing message ${key}`;
+                }
+                if (!placeholders[placeholder.toLowerCase()]) {
+                  throw `Error: missing placeholder ${placeholder.toLowerCase()} for message ${key}`;
+                }
+                return `\$${placeholder.toUpperCase()}\$`;
+              });
               messages[key] = {
                 'message': message,
-                'placeholders': placeholders[key]
+                'placeholders': placeholders
               };
             }
           });
@@ -162,4 +156,5 @@ function processMessageFiles(locales) {
 getListLocales().then(processMessageFiles)
 .then(writeFiles).catch((err)=> {
   error(err);
+  process.exit(1);
 });
