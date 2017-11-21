@@ -9,7 +9,9 @@ export {NEXT_OPEN, PICK_TIME};
 
 export const times = [
   {id: 'later', icon: 'later_today.svg', title: browser.i18n.getMessage('timeLaterToday')},
+  {id: 'evening', icon: 'later_today.svg', title: browser.i18n.getMessage('timeThisEvening')},
   {id: 'tomorrow', icon: 'tomorrow.svg', title: browser.i18n.getMessage('timeTomorrow')},
+  {id: 'tomorrowEvening', icon: 'tomorrow.svg', title: browser.i18n.getMessage('timeTomorrowEvening')},
   {id: 'weekend', icon: 'weekends.svg', title: browser.i18n.getMessage('timeThisWeekend')},
   {id: 'week', icon: 'next_week.svg', title: browser.i18n.getMessage('timeNextWeek')},
   {id: 'month', icon: 'next_month.svg', title: browser.i18n.getMessage('timeNextMonth')},
@@ -33,8 +35,16 @@ export function timeForId(time, id) {
       rv = rv.add(3, 'hours').minute(0);
       text = getLocalizedDateTime(rv, 'short_time');
       break;
+    case 'evening':
+      rv = rv.hour(19).minute(0);
+      text = getLocalizedDateTime(rv, 'short_time');
+      break;
     case 'tomorrow':
       rv = rv.add(1, 'day').hour(9).minute(0);
+      text = getLocalizedDateTime(rv, 'short_date_time');
+      break;
+    case 'tomorrowEvening':
+      rv = rv.add(1, 'day').hour(19).minute(0);
       text = getLocalizedDateTime(rv, 'short_date_time');
       break;
     case 'weekend':
